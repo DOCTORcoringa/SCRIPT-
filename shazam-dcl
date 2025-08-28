@@ -1,0 +1,286 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+HTML_PAGE = """
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"/>
+<title>Menu Hacker Style</title>
+<style>
+  body {
+    background-color: #000000;
+    color: #00FF00;
+    font-family: 'Courier New', Courier, monospace;
+    margin:0; padding: 20px;
+    text-shadow:
+      0 0 5px #00FF00,
+      0 0 10px #00FF00,
+      0 0 20px #00FF00;
+  }
+  #terminal {
+    background: #000000;
+    border: 2px solid #149414;
+    padding: 20px;
+    height: 500px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    box-shadow:
+      0 0 10px #00FF00,
+      inset 0 0 8px #149414;
+  }
+  input, select, button {
+    background: #001a00;
+    color: #99ff99;
+    border: 1px solid #32CD32;
+    font-family: monospace;
+    font-size: 16px;
+    padding: 5px;
+    text-shadow: 0 0 3px #32CD32;
+    outline-color: #32CD32;
+  }
+  button:hover {
+    background-color: #004d00;
+    border-color: #228B22;
+    cursor: pointer;
+    text-shadow: 0 0 8px #228B22;
+  }
+  .progress-bar {
+    width: 100%;
+    background-color: #003300;
+    border: 1px solid #00FF00;
+    height: 20px;
+    margin-top: 10px;
+    position: relative;
+    box-shadow: 0 0 5px #00FF00;
+  }
+  .progress-bar-fill {
+    background-color: #32CD32;
+    height: 100%;
+    width: 0%;
+    transition: width 0.25s ease-in-out;
+    box-shadow:
+      0 0 8px #7CFC00,
+      inset 0 0 5px #32CD32;
+  }
+  .menu-option:hover {
+    text-decoration: underline;
+    color: #7CFC00;
+    text-shadow: 0 0 5px #7CFC00;
+  }
+  .whatsapp-art {
+    color: #25D366;
+    text-shadow:
+      0 0 8px #25D366,
+      0 0 20px #25D366;
+    white-space: pre;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  ::selection {
+    background: #00FF00;
+    color: black;
+  }
+  input, textarea {
+    caret-color: #32CD32;
+    text-shadow: none;
+  }
+</style>
+</head>
+<body>
+<div id="terminal"></div>
+
+<script>
+const terminal = document.getElementById('terminal');
+const options = [];
+for(let i=0; i<26; i++){
+  options.push(String.fromCharCode(65 + i));
+}
+options.push('S'); // Opção Sobre
+let userName = "";
+
+function clearTerminal(){
+  terminal.innerHTML = "";
+}
+
+async function typeText(text, delay=30){
+  for(let i=0; i<text.length; i++){
+    terminal.innerHTML += text.charAt(i);
+    terminal.scrollTop = terminal.scrollHeight;
+    await new Promise(r => setTimeout(r, delay));
+  }
+  terminal.innerHTML += '\\n';
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+async function showSlogan(){
+  const art = `
+╔═══╗──╔╗────╔╗─────────────
+║╔═╗║──║║────║║─────────────
+║║─╚╬══╣║╔══╦╝╠══╦═╗╔══╦═╗
+║║─╔╣╔╗║║║╔╗╠╗║╔╗║╔╗╣╔╗║╔╝
+║╚═╝║╚╝║╚╣╚╝║║║╚╝║║║║╚╝║║ 
+╚═══╩══╩═╩══╩╩╩══╩╝╚╩═╗╠╝ 
+────────────────────────╔═╝║ 
+─────── WhatsApp ────────╚══╝
+`;
+  terminal.innerHTML += `<pre class="whatsapp-art">${art}</pre>`;
+  await typeText("Denúncia em Alta Voltagem!");
+  await typeText("Protegendo sua voz, ligando o alerta!");
+  await typeText("");
+}
+
+async function askUserName(){
+  await typeText("Por favor, digite seu nome:");
+  let name = await getInput();
+  return name.trim() || "Usuário";
+}
+
+function updateLastLine(text){
+  let lines = terminal.innerHTML.split('\\n');
+  lines[lines.length - 2] = text;
+  terminal.innerHTML = lines.join('\\n');
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+async function getInput(){
+  return new Promise((resolve) => {
+    let inputVal = "";
+    function onKey(e){
+      if(e.key === 'Enter'){
+        terminal.innerHTML += '\\n';
+        document.removeEventListener('keydown', onKey);
+        resolve(inputVal);
+      } else if(e.key === 'Backspace'){
+        if(inputVal.length > 0){
+          inputVal = inputVal.slice(0, -1);
+          updateLastLine(inputVal);
+        }
+      } else if(e.key.length === 1){
+        inputVal += e.key;
+        updateLastLine(inputVal);
+      }
+    }
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+function waitForKey(){
+  return new Promise((resolve) => {
+    function onKey(e){
+      let key = e.key.toUpperCase();
+      if(key === 'Q' || key === 'S' || options.includes(key)){
+        document.removeEventListener('keydown', onKey);
+        resolve(key);
+      }
+    }
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+async function progressBar(durationSec){
+  const barLength = 30;
+  let fillLength = 0;
+  clearTerminal();
+  await typeText("Enviando...");
+  const barDiv = document.createElement('div');
+  barDiv.classList.add('progress-bar');
+  const fillDiv = document.createElement('div');
+  fillDiv.classList.add('progress-bar-fill');
+  barDiv.appendChild(fillDiv);
+  terminal.appendChild(barDiv);
+
+  return new Promise((resolve) => {
+    let progressCounter = 0;
+    let interval = setInterval(() => {
+      progressCounter++;
+      fillLength = Math.min(barLength, progressCounter);
+      fillDiv.style.width = ((fillLength/barLength)*100) + '%';
+      if(fillLength >= barLength){
+        clearInterval(interval);
+        resolve();
+      }
+    }, durationSec*1000/barLength);
+  });
+}
+
+async function sobreSistema(){
+  clearTerminal();
+  await typeText("Sobre o Sistema:");
+  await typeText("Este sistema foi criado para ajudar na denúncia de forma rápida e segura.");
+  await typeText("Nosso objetivo é proteger sua voz e promover ações contra irregularidades.");
+  await typeText("Use as opções do menu para enviar denúncias e outras ações relevantes.");
+  await typeText("\\nPressione qualquer tecla para voltar ao menu.");
+  await waitForAnyKey();
+}
+
+function waitForAnyKey(){
+  return new Promise(resolve => {
+    function handler(e){
+      document.removeEventListener('keydown', handler);
+      resolve();
+    }
+    document.addEventListener('keydown', handler);
+  });
+}
+
+async function printMenu(){
+  clearTerminal();
+  for(let i=0; i<26; i++){
+    await typeText(`${options[i]}) Opção ${options[i]} - Abrir WhatsApp`);
+  }
+  await typeText("S) Sobre o Sistema");
+  await typeText("Q) Sair");
+  await typeText("\\nDigite a letra da opção desejada e tecle Enter:");
+}
+
+async function mainLoop(){
+  while(true){
+    await printMenu();
+    let choice = await waitForKey();
+    if(choice === 'Q'){
+      clearTerminal();
+      await typeText("Saindo... Obrigado por usar!");
+      break;
+    }
+    if(choice === 'S'){
+      await sobreSistema();
+      continue;
+    }
+    if(options.includes(choice)){
+      clearTerminal();
+      await typeText(`Você escolheu a opção ${choice}`);
+      await typeText("Abrindo WhatsApp...");
+      window.open('https://wa.me/message/C7VWPEONV6IJL1', '_blank');
+      await typeText("WhatsApp aberto em nova aba.");
+      await typeText("Pressione qualquer tecla para voltar ao menu.");
+      await waitForAnyKey();
+    }
+  }
+}
+
+async function greetUser(){
+  clearTerminal();
+  await showSlogan();
+  userName = await askUserName();
+  clearTerminal();
+  await typeText(`Seja bem-vindo, ${userName}!`);
+  await typeText("Use o menu para escolher opções.");
+  await new Promise(r => setTimeout(r, 1000));
+  mainLoop();
+}
+
+greetUser();
+
+</script>
+</body>
+</html>
+"""
+
+@app.route('/')
+def index():
+    return render_template_string(HTML_PAGE)
+
+if __name__ == "__main__":
+    app.run(debug=True)
