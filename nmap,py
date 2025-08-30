@@ -1,0 +1,182 @@
+import os
+import time
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import Prompt
+
+console = Console()
+
+def clear_screen():
+    os.system("clear" if os.name == "posix" else "cls")
+
+def show_banner():
+    clear_screen()
+    banner_text = """
+   ███╗   ██╗███╗   ███╗ █████╗ ███╗   ██╗ █████╗ 
+   ████╗  ██║████╗ ████║██╔══██╗████╗  ██║██╔══██╗
+   ██╔██╗ ██║██╔████╔██║███████║██╔██╗ ██║███████║
+   ██║╚██╗██║██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║
+   ██║ ╚████║██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║
+   ╚═╝  ╚═══╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
+              [bold green]NMAP DCL 🇱🇻[/bold green]
+
+               By doctor
+"""
+    console.print(Panel(banner_text, style="bold yellow", expand=False))
+
+def pause():
+    console.print("\nPressione [bold cyan]ENTER[/bold cyan] para voltar ao menu...")
+    input()
+
+def show_definition_example(title, definition, example):
+    show_banner()
+    console.print(f"[bold cyan]----------- Técnica: [white]{title}[/white] -----------[/bold cyan]\n")
+    console.print(f"[bold green]> Definição:[/bold green] {definition}\n")
+    console.print(f"[bold green]> Exemplo:[/bold green] {example}\n")
+    pause()
+
+def main_menu():
+    while True:
+        show_banner()
+        console.print("[bold yellow] OPÇÃO[/bold yellow]\n" +
+                      "  [1] Escaneo de puertos TCP\n" +
+                      "  [2] Escaneo de puertos UDP\n" +
+                      "  [3] Escaneo de servicios HTTP\n" +
+                      "  [4] Escaneo de servicios HTTPS\n" +
+                      "  [5] Escaneo de servicios FTP\n" +
+                      "  [6] Escaneo de servicios SSH\n" +
+                      "  [7] Escaneo de servicios Telnet\n" +
+                      "  [8] Escaneo de servicios DNS\n" +
+                      "  [9] Escaneo de servicios SNMP\n" +
+                      "  [10] Escaneo de servicios SMB\n" +
+                      "  [11] Escaneo de servicios RDP\n" +
+                      "  [12] Escaneo de servicios MySQL\n" +
+                      "  [13] Escaneo de servicios PostgreSQL\n" +
+                      "  [14] Escaneo de servicios MSSQL\n" +
+                      "  [15] Escaneo de servicios Oracle\n" +
+                      "  [16] Escaneo de servicios MongoDB\n" +
+                      "  [17] Escaneo de servicios Redis\n" +
+                      "  [18] Escaneo de servicios FTPS\n" +
+                      "  [19] Escaneo de servicios SFTP\n" +
+                      "  [20] Escaneo de servicios SMTP\n" +
+                      "  [21] Escaneo de servicios POP3\n" +
+                      "  [22] Escaneo de servicios IMAP\n" +
+                      "  [23] Escaneo de servicios LDAP\n" +
+                      "  [24] Escaneo de servicios NTP\n" +
+                      "  [25] Escaneo de servicios VNC\n" +
+                      "  [26] Escaneo de servicios RPC\n" +
+                      "  [27] Escaneo de servicios NFS\n" +
+                      "  [28] Escaneo de servicios Redis\n" +
+                      "  [29] Escaneo de servicios FTPS\n" +
+                      "  [30] Escaneo de servicios SFTP\n" +
+                      "  [0] Salir\n"
+                      , style="bold white")
+
+        choice = Prompt.ask("[bold cyan]Digite sua escolha[/bold cyan]")
+
+        if choice == "0":
+            console.print("\nSaindo... Até logo!\n", style="bold red")
+            break
+
+        tech_info = {
+            "1": ("Escaneo de puertos TCP", 
+                  "Permite identificar y evaluar los puertos TCP abiertos en una red.",
+                  "Ejemplo: nmap -p 1-1000 192.168.0.0/24"),
+            "2": ("Escaneo de puertos UDP", 
+                  "Permite identificar y evaluar los puertos UDP abiertos en una red.",
+                  "Ejemplo: nmap -sU -p 1-1000 192.168.0.0/24"),
+            "3": ("Escaneo de servicios HTTP", 
+                  "Permite identificar y evaluar los servicios HTTP activos en una red.",
+                  "Ejemplo: nmap -p 80 192.168.0.0/24"),
+            "4": ("Escaneo de servicios HTTPS", 
+                  "Permite identificar y evaluar los servicios HTTPS activos en una red.",
+                  "Ejemplo: nmap -p 443 192.168.0.0/24"),
+            "5": ("Escaneo de servicios FTP", 
+                  "Permite identificar y evaluar los servicios FTP activos en una red.",
+                  "Ejemplo: nmap -p 21 192.168.0.0/24"),
+            "6": ("Escaneo de servicios SSH", 
+                  "Permite identificar y evaluar los servicios SSH activos en una red.",
+                  "Ejemplo: nmap -p 22 192.168.0.0/24"),
+            "7": ("Escaneo de servicios Telnet", 
+                  "Permite identificar y evaluar los servicios Telnet activos en una red.",
+                  "Ejemplo: nmap -p 23 192.168.0.0/24"),
+            "8": ("Escaneo de servicios DNS", 
+                  "Permite identificar y evaluar los servicios DNS activos en una red.",
+                  "Ejemplo: nmap -p 53 192.168.0.0/24"),
+            "9": ("Escaneo de servicios SNMP", 
+                  "Permite identificar y evaluar los servicios SNMP activos en una red.",
+                  "Ejemplo: nmap -p 161 192.168.0.0/24"),
+            "10": ("Escaneo de servicios SMB", 
+                   "Permite identificar y evaluar los servicios SMB activos en una red.",
+                   "Ejemplo: nmap -p 445 192.168.0.0/24"),
+            "11": ("Escaneo de servicios RDP", 
+                   "Permite identificar y evaluar los servicios RDP activos en una red.",
+                   "Ejemplo: nmap -p 3389 192.168.0.0/24"),
+            "12": ("Escaneo de servicios MySQL", 
+                   "Permite identificar y evaluar los servicios MySQL activos en una red.",
+                   "Ejemplo: nmap -p 3306 192.168.0.0/24"),
+            "13": ("Escaneo de servicios PostgreSQL", 
+                   "Permite identificar y evaluar los servicios PostgreSQL activos en una red.",
+                   "Ejemplo: nmap -p 5432 192.168.0.0/24"),
+            "14": ("Escaneo de servicios MSSQL", 
+                   "Permite identificar y evaluar los servicios MSSQL activos en una red.",
+                   "Ejemplo: nmap -p 1433 192.168.0.0/24"),
+            "15": ("Escaneo de servicios Oracle", 
+                   "Permite identificar y evaluar los servicios Oracle activos en una red.",
+                   "Ejemplo: nmap -p 1521 192.168.0.0/24"),
+            "16": ("Escaneo de servicios MongoDB", 
+                   "Permite identificar y evaluar los servicios MongoDB activos en una red.",
+                   "Ejemplo: nmap -p 27017 192.168.0.0/24"),
+            "17": ("Escaneo de servicios Redis", 
+                   "Permite identificar y evaluar los servicios Redis activos en una red.",
+                   "Ejemplo: nmap -p 6379 192.168.0.0/24"),
+            "18": ("Escaneo de servicios FTPS", 
+                   "Permite identificar y evaluar los servicios FTPS activos en una red.",
+                   "Ejemplo: nmap -p 990 192.168.0.0/24"),
+            "19": ("Escaneo de servicios SFTP", 
+                   "Permite identificar y evaluar los servicios SFTP activos en una red.",
+                   "Ejemplo: nmap -p 22 192.168.0.0/24"),
+            "20": ("Escaneo de servicios SMTP", 
+                   "Permite identificar y evaluar los serviços SMTP ativos em uma rede.",
+                   "Ejemplo: nmap -p 25 192.168.0.0/24"),
+            "21": ("Escaneo de servicios POP3", 
+                   "Permite identificar y evaluar los servicios POP3 activos en una red.",
+                   "Ejemplo: nmap -p 110 192.168.0.0/24"),
+            "22": ("Escaneo de servicios IMAP", 
+                   "Permite identificar y evaluar los servicios IMAP activos en una red.",
+                   "Ejemplo: nmap -p 143 192.168.0.0/24"),
+            "23": ("Escaneo de servicios LDAP", 
+                   "Permite identificar y evaluar los servicios LDAP activos en una red.",
+                   "Ejemplo: nmap -p 389 192.168.0.0/24"),
+            "24": ("Escaneo de servicios NTP", 
+                   "Permite identificar y evaluar los servicios NTP activos en una red.",
+                   "Ejemplo: nmap -p 123 192.168.0.0/24"),
+            "25": ("Escaneo de servicios VNC", 
+                   "Permite identificar y evaluar los servicios VNC activos en una red.",
+                   "Ejemplo: nmap -p 5900 192.168.0.0/24"),
+            "26": ("Escaneo de servicios RPC", 
+                   "Permite identificar y evaluar los servicios RPC activos en una red.",
+                   "Ejemplo: nmap -p 135 192.168.0.0/24"),
+            "27": ("Escaneo de servicios NFS", 
+                   "Permite identificar y evaluar los servicios NFS activos en una red.",
+                   "Ejemplo: nmap -p 2049 192.168.0.0/24"),
+            "28": ("Escaneo de servicios Redis", 
+                   "Permite identificar y evaluar los servicios Redis activos en una red.",
+                   "Ejemplo: nmap -p 6379 192.168.0.0/24"),
+            "29": ("Escaneo de servicios FTPS", 
+                   "Permite identificar y evaluar los servicios FTPS activos en una red.",
+                   "Ejemplo: nmap -p 990 192.168.0.0/24"),
+            "30": ("Escaneo de servicios SFTP", 
+                   "Permite identificar y evaluar los servicios SFTP activos en una red.",
+                   "Ejemplo: nmap -p 22 192.168.0.0/24")
+        }
+
+        info = tech_info.get(choice, None)
+        if info:
+            show_definition_example(info[0], info[1], info[2])
+        else:
+            console.print("[red]Opção inválida! Tente novamente.[/red]")
+            time.sleep(1)
+
+if __name__ == "__main__":
+    main_menu()
